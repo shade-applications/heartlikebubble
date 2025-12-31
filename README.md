@@ -1,82 +1,127 @@
 # HeartLikeBubble 🫧
 
-A premium, high-performance image browsing application built with **Expo** and **React Native**. Designed with "limbic resonance" in mind, it features a fluid Pinterest-style masonry grid, immersive fullscreen viewer, and buttery smooth animations.
+<div align="center">
+  <img src="assets/images/icon.png" alt="HeartLikeBubble Icon" width="120" />
+  <br />
+  <br />
 
-## 🚀 Features
+  [![Expo SDK](https://img.shields.io/badge/Expo-SDK_52-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev)
+  [![React Native](https://img.shields.io/badge/React_Native-0.76-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactnative.dev)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind-NativeWind-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://www.nativewind.dev)
+  [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-- **Masonry Grid Layout**: Optimized 2-column layout using `@shopify/flash-list` for native performance and a robust Flexbox fallback for Web.
-- **Immersive Viewing**: Fullscreen image viewer with pinch-to-zoom, pan gestures, and seamless transitions using `react-native-reanimated` and `react-native-gesture-handler`.
-- **Custom UI Components**:
-  - **Blurred Tab Bar**: Transparent, glassmorphism-inspired bottom navigation.
-  - **Animated Header**: Custom header with blur effects and safe-area handling.
-  - **Bubbling Refresh**: A unique, custom-animated "heart bubble" pull-to-refresh control.
-- **Premium Aesthetics**: Dark mode priority, smooth gradients, and refined typography.
-- **Native Performance**: 60fps scrolling and interaction, optimized with `expo-image` caching.
+  <p align="center">
+    <b>A premium, aesthetic curation app for positive vibes, studying, and motivation.</b>
+    <br />
+    <i>Discover • Collect • Share</i>
+  </p>
+</div>
+
+---
+
+## 📖 Overview
+
+**HeartLikeBubble** is a beautifully designed mobile application focused on delivering high-quality, aesthetic imagery across a variety of mood-enhancing categories. Whether you need motivation for your next study session, a calming background for your phone, or just some positive energy, we've curated it all.
+
+Built with **React Native** (Expo) and styled with **NativeWind**, it features a smooth, gesture-driven interface with performance at its core.
+
+<div align="center">
+  <img src="assets/images/splash-icon.png" width="200" alt="Splash Screen Preview" />
+</div>
+
+## ✨ Features
+
+- **🎨 Multi-Category Discovery**: Explore 25+ curated categories including *Life*, *Study*, *Nature*, *Aesthetic*, *Travel*, and more.
+- **🚀 Dynamic Feed**: Infinite scrolling masonry grid powered by `FlashList` for butter-smooth performance.
+- **🖼️ High-Res Viewer**: Deep zoom, pan, and immersive viewing experience.
+- **💅 Modern UI/UX**:
+  - **Category Chips**: Instant topic switching.
+  - **Glassmorphism**: Beautiful blur effects and transparent headers.
+  - **Dark Mode**: Fully supported system-wide theme adaptation.
+- **💾 Save & Share**: Download wallpapers directly to your gallery or share them with friends.
+- **🏠 Onboarding Flow**: Personalize your experience from the very first launch.
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Expo SDK 52](https://expo.dev)
-- **Routing**: [Expo Router](https://docs.expo.dev/router/introduction/) (File-based routing)
-- **Styling**: [NativeWind](https://www.nativewind.dev/) (Tailwind CSS for React Native)
+- **Framework**: [React Native](https://reactnative.dev/) via [Expo](https://expo.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [NativeWind (Tailwind CSS)](https://www.nativewind.dev/)
+- **Navigation**: [Expo Router](https://docs.expo.dev/router/introduction/)
 - **Animations**: [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/)
-- **Gestures**: [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/)
-- **Lists**: [FlashList](https://shopify.github.io/flash-list/) (`@shopify/flash-list`)
+- **List Performance**: [FlashList](https://shopify.github.io/flash-list/) https://shopify.github.io/flash-list/
+- **Data Scraping**: Python 3, Selenium, BeautifulSoup (Custom Batch Scraper)
 
-## 🏃‍♂️ Getting Started
+## 🚀 Getting Started
 
-1.  **Install Dependencies**:
-    ```bash
-    npm install
-    ```
+### Prerequisites
 
-2.  **Start the App**:
-    ```bash
-    npx expo start
-    ```
+- [Node.js](https://nodejs.org/) (LTS recommended)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [Expo Go](https://expo.dev/client) app on your physical device OR Android Emulator/iOS Simulator.
 
-3.  **Run on Device/Simulator**:
-    - Press `a` for Android Emulator.
-    - Press `i` for iOS Simulator.
-    - Scan the QR code with Expo Go on your physical device.
+### Installation
 
-## 📦 Publishing to Google Play Store
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/heartlikebubble.git
+   cd heartlikebubble
+   ```
 
-To publish this app to the Google Play Store, you need to build an Android App Bundle (AAB).
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+   *Note: If you run into peer dependency issues, try `npm install --legacy-peer-deps`.*
 
-### 1. Prerequisites
-- **EAS CLI**: Install the Expo Application Services CLI globally.
-  ```bash
-  npm install -g eas-cli
-  ```
-- **Expo Account**: Log in to your Expo account.
-  ```bash
-  eas login
-  ```
-- **Google Play Developer Account**: You must have a developer account ($25 one-time fee).
+3. **Start the development server**
+   ```bash
+   npx expo start
+   ```
 
-### 2. Configure Build
-Run the configuration command to set up `eas.json` (if not already done).
+4. **Run on device**
+   - Scan the QR code with **Expo Go** (Android) or the Camera app (iOS).
+   - Press `a` for Android Emulator.
+   - Press `i` for iOS Simulator.
+
+## 🕷️ Python Scraper (Optional)
+
+We use a custom Python script to ethically scrape and curate high-resolution images from Pinterest for our categories.
+
 ```bash
-eas build:configure
+# Activate virtual environment
+source venv/bin/activate
+
+# Run the batch scraper (iterates through all categories)
+python3 scripts/batch_scraper.py
 ```
-*Select `Android` when prompted.*
 
-### 3. Build for Production
-Run the build command to generate the AAB file.
+## 📱 Build for Production
+
+To generate an Android App Bundle (.aab) for the Google Play Store:
+
 ```bash
+# Login to EAS
+npm install -g eas-cli
+eas login
+
+# Configure build
+eas build:configure
+
+# Run build
 eas build --platform android
 ```
-*EAS will handle the signing credentials automatically (Keystore) for you.*
 
-### 4. Upload to Play Console
-1.  Once the build finishes, download the `.aab` file from the link provided in the terminal.
-2.  Go to the [Google Play Console](https://play.google.com/console).
-3.  Create a **New App**.
-4.  Navigate to **Production** (or **Testing** > **Internal testing** for a beta).
-5.  Create a **New Release**.
-6.  Upload your `.aab` file.
-7.  Complete the store listing details (Title, Description, Screenshots, Icon).
-8.  **Rollout** your release!
+## 🤝 Contribution
 
----
-*Built with ❤️ by Shade Applications*
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
