@@ -10,17 +10,20 @@ import { CustomHeader } from '../../components/CustomHeader';
 import { CustomRefreshControl } from '../../components/CustomRefreshControl';
 import { ImageGrid } from '../../components/ImageGrid';
 import { COLORS } from '../../constants/theme';
-import { fetchImages, UnsplashImage } from '../../lib/fetchImages';
+import { fetchAllImages, shuffleArray, UnsplashImage } from '../../lib/fetchImages';
 
 export default function Home() {
-    const [images, setImages] = useState<UnsplashImage[]>([]);
+    const [allImages, setAllImages] = useState<UnsplashImage[]>([]);
+    const [displayedImages, setDisplayedImages] = useState<UnsplashImage[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("positive");
+    const [page, setPage] = useState(1);
 
     const router = useRouter();
     const { colorScheme } = useColorScheme();
     const insets = useSafeAreaInsets();
+    const PAGE_SIZE = 20;
 
     useEffect(() => {
         loadPreferences();
@@ -42,24 +45,47 @@ export default function Home() {
 
     useEffect(() => {
         if (selectedCategory) {
-            loadImages();
+            initialLoad();
         }
-    }, [selectedCategory]); // Reload when category changes
+    }, [selectedCategory]);
 
-    const loadImages = async () => {
+    const initialLoad = async () => {
         setLoading(true);
-        const newImages = await fetchImages(1, 20, selectedCategory);
-        setImages(newImages);
+        setPage(1);
+
+        // Fetch ALL images for the category
+        const fullList = await fetchAllImages(selectedCategory);
+
+        // Shuffle them randomly for the "random feed" requirement
+        const shuffled = shuffleArray(fullList);
+        setAllImages(shuffled);
+
+        // Set initial page
+        setDisplayedImages(shuffled.slice(0, PAGE_SIZE));
         setLoading(false);
+    };
+
+    const loadMore = () => {
+        if (!loading && !refreshing && displayedImages.length < allImages.length) {
+            const nextPage = page + 1;
+            const nextBatch = allImages.slice(0, nextPage * PAGE_SIZE); // Slice from 0 to new end
+            // OR strictly append:
+            // const nextBatch = allImages.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+            // setDisplayedImages(prev => [...prev, ...nextBatch]);
+
+            setDisplayedImages(nextBatch);
+            setPage(nextPage);
+        }
     };
 
     const onRefresh = async () => {
         setRefreshing(true);
-        // Simulate refresh fetch with slight delay
-        await new Promise(r => setTimeout(r, 1500));
-        // Shuffle or re-fetch logic could go here
-        // For now, re-fetch from top
-        await loadImages();
+        // Re-fetch and Re-shuffle to change feed every time
+        const fullList = await fetchAllImages(selectedCategory);
+        const shuffled = shuffleArray(fullList);
+        setAllImages(shuffled);
+        setDisplayedImages(shuffled.slice(0, PAGE_SIZE));
+        setPage(1);
         setRefreshing(false);
     };
 
@@ -91,9 +117,9 @@ export default function Home() {
                 <View style={{ flex: 1 }}>
                     {/* Padding handled by header/chips height now, or we adjust contentContainerStyle */}
                     <ImageGrid
-                        images={images}
+                        images={displayedImages}
                         onImagePress={openImage}
-                        onEndReached={() => { }}
+                        onEndReached={loadMore}
                         // refreshing={refreshing} 
                         onRefresh={onRefresh}
                     />

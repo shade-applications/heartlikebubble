@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 import "../global.css";
 
 import { useColorScheme } from 'nativewind';
+import { FavoritesProvider } from '../context/FavoritesContext';
 
 export default function RootLayout() {
   const { colorScheme } = useColorScheme();
@@ -44,13 +45,15 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />
-        <Stack.Screen name="image/[id]" options={{ presentation: 'transparentModal', headerShown: false, animation: 'fade' }} />
-      </Stack>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-    </ThemeProvider>
+    <FavoritesProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />
+          <Stack.Screen name="image/[id]" options={{ presentation: 'transparentModal', headerShown: false, animation: 'fade' }} />
+        </Stack>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      </ThemeProvider>
+    </FavoritesProvider>
   );
 }

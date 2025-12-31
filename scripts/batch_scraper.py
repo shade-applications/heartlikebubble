@@ -1,14 +1,16 @@
 import time
 import json
 import os
+import random
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 
 # Global Config
-TARGET_PER_CATEGORY = 2000 # Increased target as requested
+TARGET_PER_CATEGORY = 2000 
 SCROLL_PAUSE_TIME = 2.0
 BATCH_SIZE = 50
 
@@ -53,11 +55,12 @@ def scrape_category(driver, category):
             collected_data = []
     
     collected_ids = {item['id'] for item in collected_data}
+    initial_count = len(collected_data)
     
-    if len(collected_data) >= TARGET_PER_CATEGORY:
-        print(f"[{category}] Already met target ({len(collected_data)}). Skipping.")
-        return
-
+    if initial_count >= TARGET_PER_CATEGORY:
+        print(f"[{category}] Already met target ({initial_count}). (Will continue for a bit to check for new stuff anyway)")
+        # return # Optional: force continue to find NEW items even if target met?
+    
     url = f"https://www.pinterest.com/search/pins/?q={search_term.replace(' ', '%20')}"
     driver.get(url)
     time.sleep(5)
@@ -65,7 +68,13 @@ def scrape_category(driver, category):
     last_height = driver.execute_script("return document.body.scrollHeight")
     consecutive_stalls = 0
     
-    while len(collected_data) < TARGET_PER_CATEGORY:
+    # Try finding the body to press keys on
+    try:
+        body = driver.find_element(By.TAG_NAME, 'body')
+    except:
+        body = None
+    
+    while len(collected_data) < TARGET_PER_CATEGORY + 500: # Overshoot slightly to dedupe later if needed
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         images = soup.find_all('img', src=True)
         
@@ -104,21 +113,38 @@ def scrape_category(driver, category):
             new_items_found = True
         
         if new_items_found:
+            # Only save batch if we actually added something
             if len(collected_data) % BATCH_SIZE == 0:
                 save_data(category, collected_data)
-                print(f"[{category}] Collected {len(collected_data)}...")
+                print(f"[{category}] Collected {len(collected_data)} (New: {len(collected_data) - initial_count})...")
+            consecutive_stalls = 0 # Reset fails if we found data
         
         if len(collected_data) >= TARGET_PER_CATEGORY:
+            print(f"[{category}] Hit target {TARGET_PER_CATEGORY}!")
             break
             
+        # Scroll Logic
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(SCROLL_PAUSE_TIME)
+        
+        # Also try keys to trigger lazy load sometimes
+        if body:
+            try:
+                body.send_keys(Keys.PAGE_DOWN)
+            except:
+                pass
+                
+        time.sleep(SCROLL_PAUSE_TIME + random.uniform(0.5, 2.0))
         
         new_height = driver.execute_script("return document.body.scrollHeight")
         if new_height == last_height:
             consecutive_stalls += 1
-            if consecutive_stalls > 5:
-                print(f"[{category}] Stalled endlessly. Moving to next.")
+            if consecutive_stalls > 8:
+                print(f"[{category}] Stalled endlessly ({consecutive_stalls} times).")
+                # Try one refresh + reload
+                # driver.refresh()
+                # time.sleep(5)
+                # But typically this loses scroll position on infinite feeds. 
+                # Better to just break and move to next category.
                 break
         else:
             consecutive_stalls = 0
@@ -134,8 +160,13 @@ def main():
     driver = setup_driver()
     
     try:
+        # Check connection or do a dummy load
+        driver.get("https://www.pinterest.com")
+        time.sleep(3)
+        
         for category in CATEGORIES:
             scrape_category(driver, category)
+            time.sleep(2) # Breath between categories
     except KeyboardInterrupt:
         print("\nBatch scraping interrupted.")
     except Exception as e:

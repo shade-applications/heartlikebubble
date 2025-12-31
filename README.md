@@ -27,7 +27,7 @@
 Built with **React Native** (Expo) and styled with **NativeWind**, it features a smooth, gesture-driven interface with performance at its core.
 
 <div align="center">
-  <img src="assets/images/splash-icon.png" width="200" alt="Splash Screen Preview" />
+  <img src="assets/splash.png" width="200" alt="Splash Screen Preview" />
 </div>
 
 ## ✨ Features
