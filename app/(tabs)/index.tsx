@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
@@ -22,7 +23,27 @@ export default function Home() {
     const insets = useSafeAreaInsets();
 
     useEffect(() => {
-        loadImages();
+        loadPreferences();
+    }, []);
+
+    const loadPreferences = async () => {
+        try {
+            const prefs = await AsyncStorage.getItem('user_interests');
+            if (prefs) {
+                const interests = JSON.parse(prefs);
+                if (interests.length > 0) {
+                    setSelectedCategory(interests[0]);
+                }
+            }
+        } catch (e) {
+            console.log("Error loading prefs", e);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedCategory) {
+            loadImages();
+        }
     }, [selectedCategory]); // Reload when category changes
 
     const loadImages = async () => {
