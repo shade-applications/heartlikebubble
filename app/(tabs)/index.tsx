@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomHeader } from '../../components/CustomHeader';
+import { CustomRefreshControl } from '../../components/CustomRefreshControl';
 import { ImageGrid } from '../../components/ImageGrid';
 import { COLORS } from '../../constants/theme';
 import { fetchImages, UnsplashImage } from '../../lib/fetchImages';
@@ -16,6 +17,8 @@ export default function Home() {
     const router = useRouter();
     const { colorScheme } = useColorScheme();
     const insets = useSafeAreaInsets();
+
+    // Clean up reanimated values if needed, but handled in component
 
     useEffect(() => {
         loadImages();
@@ -29,8 +32,8 @@ export default function Home() {
 
     const onRefresh = async () => {
         setRefreshing(true);
-        // Simulate refresh fetch
-        await new Promise(r => setTimeout(r, 1500));
+        // Simulate refresh fetch with slight delay to show animation
+        await new Promise(r => setTimeout(r, 2000));
         // Shuffle images for "new" content effect
         setImages(prev => [...prev].sort(() => Math.random() - 0.5));
         setRefreshing(false);
@@ -46,6 +49,7 @@ export default function Home() {
             <Stack.Screen options={{ headerShown: false }} />
 
             <CustomHeader title="Discover" />
+            <CustomRefreshControl refreshing={refreshing} />
 
             {loading ? (
                 <View className="flex-1 justify-center items-center">
@@ -57,7 +61,7 @@ export default function Home() {
                         images={images}
                         onImagePress={openImage}
                         onEndReached={() => { }}
-                        refreshing={refreshing}
+                        // refreshing={refreshing} // Handled by CustomRefreshControl
                         onRefresh={onRefresh}
                     />
                 </View>

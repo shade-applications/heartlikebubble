@@ -1,50 +1,82 @@
-# Welcome to your Expo app 👋
+# HeartLikeBubble 🫧
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A premium, high-performance image browsing application built with **Expo** and **React Native**. Designed with "limbic resonance" in mind, it features a fluid Pinterest-style masonry grid, immersive fullscreen viewer, and buttery smooth animations.
 
-## Get started
+## 🚀 Features
 
-1. Install dependencies
+- **Masonry Grid Layout**: Optimized 2-column layout using `@shopify/flash-list` for native performance and a robust Flexbox fallback for Web.
+- **Immersive Viewing**: Fullscreen image viewer with pinch-to-zoom, pan gestures, and seamless transitions using `react-native-reanimated` and `react-native-gesture-handler`.
+- **Custom UI Components**:
+  - **Blurred Tab Bar**: Transparent, glassmorphism-inspired bottom navigation.
+  - **Animated Header**: Custom header with blur effects and safe-area handling.
+  - **Bubbling Refresh**: A unique, custom-animated "heart bubble" pull-to-refresh control.
+- **Premium Aesthetics**: Dark mode priority, smooth gradients, and refined typography.
+- **Native Performance**: 60fps scrolling and interaction, optimized with `expo-image` caching.
 
-   ```bash
-   npm install
-   ```
+## 🛠️ Tech Stack
 
-2. Start the app
+- **Framework**: [Expo SDK 52](https://expo.dev)
+- **Routing**: [Expo Router](https://docs.expo.dev/router/introduction/) (File-based routing)
+- **Styling**: [NativeWind](https://www.nativewind.dev/) (Tailwind CSS for React Native)
+- **Animations**: [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/)
+- **Gestures**: [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/)
+- **Lists**: [FlashList](https://shopify.github.io/flash-list/) (`@shopify/flash-list`)
 
-   ```bash
-   npx expo start
-   ```
+## 🏃‍♂️ Getting Started
 
-In the output, you'll find options to open the app in a
+1.  **Install Dependencies**:
+    ```bash
+    npm install
+    ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+2.  **Start the App**:
+    ```bash
+    npx expo start
+    ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+3.  **Run on Device/Simulator**:
+    - Press `a` for Android Emulator.
+    - Press `i` for iOS Simulator.
+    - Scan the QR code with Expo Go on your physical device.
 
-## Get a fresh project
+## 📦 Publishing to Google Play Store
 
-When you're ready, run:
+To publish this app to the Google Play Store, you need to build an Android App Bundle (AAB).
 
+### 1. Prerequisites
+- **EAS CLI**: Install the Expo Application Services CLI globally.
+  ```bash
+  npm install -g eas-cli
+  ```
+- **Expo Account**: Log in to your Expo account.
+  ```bash
+  eas login
+  ```
+- **Google Play Developer Account**: You must have a developer account ($25 one-time fee).
+
+### 2. Configure Build
+Run the configuration command to set up `eas.json` (if not already done).
 ```bash
-npm run reset-project
+eas build:configure
 ```
+*Select `Android` when prompted.*
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 3. Build for Production
+Run the build command to generate the AAB file.
+```bash
+eas build --platform android
+```
+*EAS will handle the signing credentials automatically (Keystore) for you.*
 
-## Learn more
+### 4. Upload to Play Console
+1.  Once the build finishes, download the `.aab` file from the link provided in the terminal.
+2.  Go to the [Google Play Console](https://play.google.com/console).
+3.  Create a **New App**.
+4.  Navigate to **Production** (or **Testing** > **Internal testing** for a beta).
+5.  Create a **New Release**.
+6.  Upload your `.aab` file.
+7.  Complete the store listing details (Title, Description, Screenshots, Icon).
+8.  **Rollout** your release!
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+*Built with ❤️ by Shade Applications*
