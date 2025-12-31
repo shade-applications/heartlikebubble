@@ -33,6 +33,12 @@
     "scheme": "heartlikebubble",
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e4a7bae2-84a7-4ea8-82a0-b9f471e7a7e4"
+      }
     }
   }
 }
