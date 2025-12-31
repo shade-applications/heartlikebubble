@@ -8,17 +8,17 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 
 # Global Config
-TARGET_PER_CATEGORY = 1000
+TARGET_PER_CATEGORY = 2000 # Increased target as requested
 SCROLL_PAUSE_TIME = 2.0
 BATCH_SIZE = 50
 
+# Quote-centric categories
 CATEGORIES = [
-    "life", "study", "motivation", "wallpaper", "background",
-    "nature", "travel", "food", "fitness", "aesthetic",
-    "art", "minimal", "dark", "neon", "cats",
-    "dogs", "cars", "architecture", "love", "vintage",
-    "abstract", "space", "sky", "flowers", "fashion",
-    "music", "coding", "gaming"
+    "positive", "life", "motivation", "study", "love", 
+    "wisdom", "success", "happiness", "sad", "faith", 
+    "affirmations", "funny", "friendship", "gym", "morning", 
+    "night", "healing", "nature", "calm", "books", 
+    "aesthetic", "minimal", "phone", "dark", "vintage"
 ]
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "constants", "data")
@@ -27,7 +27,7 @@ def setup_driver():
     options = webdriver.ChromeOptions()
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    # options.add_argument("--headless") # Uncomment for headless
+    # options.add_argument("--headless") 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
@@ -38,7 +38,10 @@ def save_data(category, data):
     print(f"[{category}] Saved {len(data)} items.")
 
 def scrape_category(driver, category):
-    print(f"\n--- Starting Category: {category} ---")
+    # Enforce "quotes" suffix for relevance unless it already implies it
+    search_term = f"{category} quotes wallpaper"
+    print(f"\n--- Starting Category: {category} (Search: '{search_term}') ---")
+    
     filepath = os.path.join(DATA_DIR, f"{category}.json")
     
     collected_data = []
@@ -55,7 +58,7 @@ def scrape_category(driver, category):
         print(f"[{category}] Already met target ({len(collected_data)}). Skipping.")
         return
 
-    url = f"https://www.pinterest.com/search/pins/?q={category + ' aesthetic'}"
+    url = f"https://www.pinterest.com/search/pins/?q={search_term.replace(' ', '%20')}"
     driver.get(url)
     time.sleep(5)
     
@@ -78,7 +81,6 @@ def scrape_category(driver, category):
             for sizes in ['/60x60/', '/236x/', '/474x/']:
                 high_res_url = high_res_url.replace(sizes, '/736x/')
             
-            # Double check
             if '/60x60/' in high_res_url:
                 continue
 
@@ -87,7 +89,7 @@ def scrape_category(driver, category):
             if unique_id in collected_ids:
                 continue
             
-            alt_text = img.get('alt', f'{category} image')
+            alt_text = img.get('alt', f'{category} quote')
             
             item = {
                 "id": unique_id,
@@ -104,6 +106,7 @@ def scrape_category(driver, category):
         if new_items_found:
             if len(collected_data) % BATCH_SIZE == 0:
                 save_data(category, collected_data)
+                print(f"[{category}] Collected {len(collected_data)}...")
         
         if len(collected_data) >= TARGET_PER_CATEGORY:
             break
