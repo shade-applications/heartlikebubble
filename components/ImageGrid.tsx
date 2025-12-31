@@ -1,7 +1,7 @@
 // @ts-ignore
 import { MasonryFlashList } from '@shopify/flash-list';
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import { UnsplashImage } from '../lib/fetchImages';
 import { ImageCard } from './ImageCard';
 
@@ -42,6 +42,36 @@ export const ImageGrid: React.FC<ImageGridProps> = ({
             </View>
         );
     };
+
+    // Fallback or Web Layout (simple 2-column flex)
+    // We use this if MasonryFlashList is undefined (Web issue) or explicitly on Web if preferred
+    if (!MasonryFlashList || Platform.OS === 'web') {
+        const col1 = images.filter((_, i) => i % 2 === 0);
+        const col2 = images.filter((_, i) => i % 2 !== 0);
+
+        return (
+            <ScrollView
+                style={{ flex: 1, width: '100%' }}
+                contentContainerStyle={{ paddingVertical: 12, flexDirection: 'row' }}
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={{ flex: 1, paddingLeft: 12, paddingRight: 6 }}>
+                    {col1.map(img => (
+                        <View key={img.id} style={{ marginBottom: 0 }}>
+                            <ImageCard image={img} onPress={onImagePress} />
+                        </View>
+                    ))}
+                </View>
+                <View style={{ flex: 1, paddingLeft: 6, paddingRight: 12 }}>
+                    {col2.map(img => (
+                        <View key={img.id} style={{ marginBottom: 0 }}>
+                            <ImageCard image={img} onPress={onImagePress} />
+                        </View>
+                    ))}
+                </View>
+            </ScrollView>
+        );
+    }
 
     return (
         <View style={{ flex: 1, width: '100%' }}>
