@@ -1,10 +1,21 @@
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import React from 'react';
 import { Platform } from 'react-native';
 import { COLORS } from '../../constants/theme';
+
+function TabBarIcon(props: {
+    name: React.ComponentProps<typeof FontAwesome>['name'] | 'compass';
+    color: string;
+}) {
+    if (props.name === 'compass') {
+        return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} name="compass" />;
+    }
+    // @ts-ignore - FontAwesome name mismatch with compass potential logic above
+    return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+}
 
 export default function TabLayout() {
     const { colorScheme } = useColorScheme();
@@ -51,8 +62,16 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
+                name="explore"
+                options={{
+                    title: 'Explore',
+                    tabBarIcon: ({ color }) => <TabBarIcon name="compass" color={color} />,
+                }}
+            />
+            <Tabs.Screen
                 name="favorites"
                 options={{
+                    title: 'Favorites',
                     tabBarIcon: ({ color, size, focused }) => (
                         <Ionicons name={focused ? 'heart' : 'heart-outline'} size={size + 2} color={color} />
                     ),
