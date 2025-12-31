@@ -4,6 +4,7 @@ import { useColorScheme } from 'nativewind';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CategoryChips } from '../../components/CategoryChips';
 import { CustomHeader } from '../../components/CustomHeader';
 import { CustomRefreshControl } from '../../components/CustomRefreshControl';
 import { ImageGrid } from '../../components/ImageGrid';
@@ -14,28 +15,30 @@ export default function Home() {
     const [images, setImages] = useState<UnsplashImage[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState("positive");
+
     const router = useRouter();
     const { colorScheme } = useColorScheme();
     const insets = useSafeAreaInsets();
 
-    // Clean up reanimated values if needed, but handled in component
-
     useEffect(() => {
         loadImages();
-    }, []);
+    }, [selectedCategory]); // Reload when category changes
 
     const loadImages = async () => {
-        const newImages = await fetchImages();
+        setLoading(true);
+        const newImages = await fetchImages(1, 20, selectedCategory);
         setImages(newImages);
         setLoading(false);
     };
 
     const onRefresh = async () => {
         setRefreshing(true);
-        // Simulate refresh fetch with slight delay to show animation
-        await new Promise(r => setTimeout(r, 2000));
-        // Shuffle images for "new" content effect
-        setImages(prev => [...prev].sort(() => Math.random() - 0.5));
+        // Simulate refresh fetch with slight delay
+        await new Promise(r => setTimeout(r, 1500));
+        // Shuffle or re-fetch logic could go here
+        // For now, re-fetch from top
+        await loadImages();
         setRefreshing(false);
     };
 
@@ -49,19 +52,28 @@ export default function Home() {
             <Stack.Screen options={{ headerShown: false }} />
 
             <CustomHeader title="Discover" />
+
+            <View className="py-2 bg-white/80 dark:bg-black/80 blur-md z-10">
+                <CategoryChips
+                    selectedCategory={selectedCategory}
+                    onSelectCategory={setSelectedCategory}
+                />
+            </View>
+
             <CustomRefreshControl refreshing={refreshing} />
 
             {loading ? (
-                <View className="flex-1 justify-center items-center">
+                <View className="flex-1 justify-center items-center pt-20">
                     <ActivityIndicator size="large" color={COLORS.primary} />
                 </View>
             ) : (
-                <View style={{ flex: 1, paddingTop: 60 + insets.top }}>
+                <View style={{ flex: 1 }}>
+                    {/* Padding handled by header/chips height now, or we adjust contentContainerStyle */}
                     <ImageGrid
                         images={images}
                         onImagePress={openImage}
                         onEndReached={() => { }}
-                        // refreshing={refreshing} // Handled by CustomRefreshControl
+                        // refreshing={refreshing} 
                         onRefresh={onRefresh}
                     />
                 </View>
