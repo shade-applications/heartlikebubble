@@ -1,4 +1,4 @@
-import { getCategoryData } from '../constants/categories';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface UnsplashImage {
     id: string;
@@ -9,39 +9,72 @@ export interface UnsplashImage {
     blur_hash?: string;
 }
 
+// GitHub Raw Content Base URL
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/shade-applications/heartlikebubble/refs/heads/main/constants/data";
+const CACHE_PREFIX = "cache_category_";
+const CACHE_EXPIRY_MS = 1000 * 60 * 60 * 24; // 24 hours
+
 // Map the scraped data format to our app's format
 const mapScrapedData = (data: any[]): UnsplashImage[] => {
     return data.map((item) => ({
         id: item.id,
         url: item.url,
-        width: 736, // Approximate for high res pint
-        height: 1000, // Varied, but 1000 is a safe aspect ratio guess for Masonry
+        width: 736,
+        height: 1000,
         description: item.caption,
-        blur_hash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4', // Placeholder blur
+        blur_hash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4',
     }));
 };
 
 export const fetchImages = async (page = 1, limit = 20, category = 'positive'): Promise<UnsplashImage[]> => {
-    // Simulate network delay for effect
-    // await new Promise((resolve) => setTimeout(resolve, 500));
-
     try {
-        const rawData = getCategoryData(category);
+        const cacheKey = `${CACHE_PREFIX}${category}`;
+        let rawData: any[] = [];
+
+        // 1. Check Cache
+        const cached = await AsyncStorage.getItem(cacheKey);
+        if (cached) {
+            const { timestamp, data } = JSON.parse(cached);
+            if (Date.now() - timestamp < CACHE_EXPIRY_MS) {
+                // console.log(`[Cache] Hit for ${category}`);
+                rawData = data;
+            }
+        }
+
+        // 2. Fetch from Network if no cache
+        if (rawData.length === 0) {
+            // console.log(`[Network] Fetching ${category}...`);
+            const url = `${GITHUB_RAW_BASE}/${category}.json`;
+            const response = await fetch(url);
+
+            if (response.ok) {
+                const json = await response.json();
+                rawData = json;
+                // Save to cache
+                await AsyncStorage.setItem(cacheKey, JSON.stringify({
+                    timestamp: Date.now(),
+                    data: rawData
+                }));
+            } else {
+                console.warn(`[Network] Failed to fetch ${category}: ${response.status}`);
+            }
+        }
+
         if (!rawData || rawData.length === 0) {
-            // Fallback to positive if requested category is empty (e.g. while scraping)
+            // Fallback to positive if specific category fails and we have no cache
             if (category !== 'positive') {
-                return fetchImages(page, limit, 'positive');
+                // Prevent infinite recursion loops if positive also fails
+                return [];
             }
             return [];
         }
 
         const mapped = mapScrapedData(rawData);
 
-        // Simple pagination simulation
+        // Pagination logic
         const start = (page - 1) * limit;
         const end = start + limit;
 
-        // If we run out, wrap around for infinite feel
         if (start >= mapped.length) {
             const wrappedStart = start % mapped.length;
             return mapped.slice(wrappedStart, wrappedStart + limit);
@@ -55,26 +88,12 @@ export const fetchImages = async (page = 1, limit = 20, category = 'positive'): 
 };
 
 export const getImageById = async (id: string, category = 'positive'): Promise<UnsplashImage | undefined> => {
-    // In a real app we'd search all or pass category. 
-    // For now, we search the passed category or default.
-    let data = getCategoryData(category);
-    let found = data.find((img: any) => img.id === id);
+    // Try to find in the current category first
+    try {
+        const imageList = await fetchImages(1, 10000, category);
+        const found = imageList.find(img => img.id === id);
+        if (found) return found;
+    } catch (e) { }
 
-    if (!found) {
-        // Search default positive as fallback
-        data = getCategoryData('positive');
-        found = data.find((img: any) => img.id === id);
-    }
-
-    if (found) {
-        return {
-            id: found.id,
-            url: found.url,
-            width: 736,
-            height: 1000,
-            description: found.caption,
-            blur_hash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4',
-        };
-    }
     return undefined;
 };
