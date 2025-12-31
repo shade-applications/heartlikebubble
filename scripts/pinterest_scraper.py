@@ -71,10 +71,16 @@ def scrape_pinterest():
                 if 'pinimg.com' not in src or 'profile' in src:
                     continue
                 
-                # Convert thumbnail to high-res URL guess (736x is standard large detailed preview)
-                # original is often random chars, but 736x is reliable
-                high_res_url = src.replace('/236x/', '/736x/').replace('/474x/', '/736x/')
+                # Convert thumbnail to high-res URL (736x is standard large detailed preview)
+                # Handle 60x60, 236x, 474x
+                high_res_url = src
+                for sizes in ['/60x60/', '/236x/', '/474x/']:
+                    high_res_url = high_res_url.replace(sizes, '/736x/')
                 
+                # Double check we don't have a tiny image if replacement failed
+                if '/60x60/' in high_res_url:
+                     continue
+
                 # Generate a unique ID from the URL (filename part)
                 unique_id = src.split('/')[-1].split('.')[0]
                 
